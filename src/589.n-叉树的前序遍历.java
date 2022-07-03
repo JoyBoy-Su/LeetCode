@@ -1,5 +1,9 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Node;
 
@@ -31,7 +35,38 @@ class Node {
 
 class Solution {
     public List<Integer> preorder(Node root) {
-        List<Integer> answer = new ArrayList<Integer>();
+        List<Integer> res = new ArrayList<Integer>();
+        if (root == null) {
+            return res;
+        }
+        Map<Node, Integer> map = new HashMap<Node, Integer>();
+        Deque<Node> stack = new ArrayDeque<Node>();
+        Node node = root;
+        while (!stack.isEmpty() || node != null) {
+            while (node != null) {
+                res.add(node.val);
+                stack.push(node);
+                List<Node> children = node.children;
+                if (children != null && children.size() > 0) {
+                    map.put(node, 0);
+                    node = children.get(0);
+                } else {
+                    node = null;
+                }
+            }
+            node = stack.peek();
+            int index = map.getOrDefault(node, -1) + 1;
+            List<Node> children = node.children;
+            if (children != null && children.size() > index) {
+                map.put(node, index);
+                node = children.get(index);
+            } else {
+                stack.pop();
+                map.remove(node);
+                node = null;
+            }
+        }
+        return res;
     }
 }
 // @lc code=end
